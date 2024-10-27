@@ -20,4 +20,14 @@ export class TaxPayerController {
   getNboByInn(@Param('inn') inn: string): Promise<TaxPayerEntity> {
     return this.taxPayerService.getNboByOrganizationInn(inn);
   }
+
+  @Get('/bfo/id/:id')
+  getBfoById(@Param('id') id: string): Promise<any[]> {
+    return this.taxPayerService.getBfoByOrganizationId(id);
+  }
+
+  @Get('/bfo/inn/:inn')
+  getBfoByInn(@Param('inn') inn: string): Promise<any[]> {
+    return this.taxPayerService.getBfoByOrganizationInn(inn);
+  }
 }

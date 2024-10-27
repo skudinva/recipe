@@ -46,4 +46,22 @@ export class TaxPayerService {
     }
     return this.getNboByOrganizationId(organizations[0].id);
   }
+
+  async getBfoByOrganizationId(id: string): Promise<any[]> {
+    const res = await fetch(`https://bo.nalog.ru/nbo/organizations/${id}/bfo`);
+    const data: any[] = await res.json();
+    clearTagsFromObjectValue(data);
+    datefyObjectValue(data);
+    return data;
+  }
+
+  async getBfoByOrganizationInn(inn: string): Promise<any[]> {
+    const organizations = await this.search(inn);
+    if (organizations.length === 0) {
+      throw new Error(`Organization with INN ${inn} not found`);
+    } else if (organizations.length > 1) {
+      throw new Error(`Multiple organizations with INN ${inn} found`);
+    }
+    return this.getBfoByOrganizationId(organizations[0].id);
+  }
 }
