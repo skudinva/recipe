@@ -13,6 +13,16 @@ interface ResponseData {
 
 @Injectable()
 export class TaxPayerService {
+  async getOrganizationByInn(inn: string): Promise<TaxPayerEntity> {
+    const organizations = await this.search(inn);
+    if (organizations.length === 0) {
+      throw new Error(`Organization with INN ${inn} not found`);
+    } else if (organizations.length > 1) {
+      throw new Error(`Multiple organizations with INN ${inn} found`);
+    }
+    return organizations[0];
+  }
+
   async search(query: string): Promise<TaxPayerEntity[]> {
     const res = await fetch(
       `${nalogServer}/advanced-search/organizations/search?query=${query}`,
@@ -39,13 +49,8 @@ export class TaxPayerService {
   }
 
   async getNboByOrganizationInn(inn: string): Promise<TaxPayerEntity> {
-    const organizations = await this.search(inn);
-    if (organizations.length === 0) {
-      throw new Error(`Organization with INN ${inn} not found`);
-    } else if (organizations.length > 1) {
-      throw new Error(`Multiple organizations with INN ${inn} found`);
-    }
-    return this.getNboByOrganizationId(organizations[0].id);
+    const organization = await this.getOrganizationByInn(inn);
+    return this.getNboByOrganizationId(organization.id);
   }
 
   async getBfoByOrganizationId(id: string): Promise<any[]> {
@@ -57,12 +62,7 @@ export class TaxPayerService {
   }
 
   async getBfoByOrganizationInn(inn: string): Promise<any[]> {
-    const organizations = await this.search(inn);
-    if (organizations.length === 0) {
-      throw new Error(`Organization with INN ${inn} not found`);
-    } else if (organizations.length > 1) {
-      throw new Error(`Multiple organizations with INN ${inn} found`);
-    }
-    return this.getBfoByOrganizationId(organizations[0].id);
+    const organization = await this.getOrganizationByInn(inn);
+    return this.getBfoByOrganizationId(organization.id);
   }
 }
