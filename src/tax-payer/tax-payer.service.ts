@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { nalogServer } from 'src/const';
 import {
   clearTagsFromObjectValue,
   datefyObjectValue,
@@ -14,7 +15,7 @@ interface ResponseData {
 export class TaxPayerService {
   async search(query: string): Promise<TaxPayerEntity[]> {
     const res = await fetch(
-      `https://bo.nalog.ru/advanced-search/organizations/search?query=${query}`,
+      `${nalogServer}/advanced-search/organizations/search?query=${query}`,
     );
     const data: ResponseData = await res.json();
 
@@ -28,7 +29,7 @@ export class TaxPayerService {
   }
 
   async getNboByOrganizationId(id: string): Promise<TaxPayerEntity> {
-    const res = await fetch(`https://bo.nalog.ru/nbo/organizations/${id}`);
+    const res = await fetch(`${nalogServer}/nbo/organizations/${id}`);
     const data: ResponseData = await res.json();
     clearTagsFromObjectValue(data);
     datefyObjectValue(data);
@@ -48,7 +49,7 @@ export class TaxPayerService {
   }
 
   async getBfoByOrganizationId(id: string): Promise<any[]> {
-    const res = await fetch(`https://bo.nalog.ru/nbo/organizations/${id}/bfo`);
+    const res = await fetch(`${nalogServer}/nbo/organizations/${id}/bfo`);
     const data: any[] = await res.json();
     clearTagsFromObjectValue(data);
     datefyObjectValue(data);
