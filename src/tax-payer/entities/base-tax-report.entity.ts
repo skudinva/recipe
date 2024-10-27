@@ -1,7 +1,7 @@
-import { TaxReportRowEntity } from './tax-report-row.entity';
+import { TaxReportRow } from '../types/tax-report-row.type';
 
 export class BaseTaxReportEntity {
   id: number;
   okud: string;
-  report: TaxReportRowEntity[];
+  data: TaxReportRow;
 }

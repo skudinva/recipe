@@ -1,4 +1,6 @@
 import { ClassConstructor, plainToInstance } from 'class-transformer';
+import { BaseTaxReportEntity } from 'src/tax-payer/entities/base-tax-report.entity';
+import { ReportPeriodCode } from 'src/tax-payer/types/report-period-code.enum';
 
 export function fillDTO<T, V>(someDTO: ClassConstructor<T>, plainObject: V) {
   return plainToInstance(someDTO, plainObject, {
@@ -48,4 +50,25 @@ export function nullifyObjectValue(object: any) {
       delete object[key];
     }
   });
+}
+
+function getPeriodKey(key: string): ReportPeriodCode {
+  const periodKey = Object.keys(ReportPeriodCode).find((period) =>
+    key.startsWith(period),
+  );
+  return ReportPeriodCode[periodKey];
+}
+
+export function convertFlatReportToNested(report: Object): void {
+  const nestedReport: BaseTaxReportEntity = report['data'] || {};
+  Object.entries(report).forEach(([key, value]) => {
+    const periodKey = getPeriodKey(key);
+    if (periodKey) {
+      const rowNo = key.replace(periodKey, '');
+      nestedReport[rowNo] = nestedReport[rowNo] || {};
+      nestedReport[rowNo][periodKey] = value;
+      delete report[key];
+    }
+  });
+  report['data'] = nestedReport;
 }

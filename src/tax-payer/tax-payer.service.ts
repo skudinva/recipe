@@ -3,6 +3,7 @@ import { plainToInstance } from 'class-transformer';
 import { nalogServer } from 'src/const';
 import {
   clearTagsFromObjectValue,
+  convertFlatReportToNested,
   datefyObjectValue,
 } from 'src/helpers/common';
 import { TaxPayerEntity } from './entities/tax-payer.entity';
@@ -58,6 +59,13 @@ export class TaxPayerService {
     const data: any[] = await res.json();
     clearTagsFromObjectValue(data);
     datefyObjectValue(data);
+    data.forEach((element) => {
+      convertFlatReportToNested(element.correction.balance);
+      convertFlatReportToNested(element.correction.financialResult);
+      convertFlatReportToNested(element.correction.capitalChange);
+      convertFlatReportToNested(element.correction.fundsMovement);
+    });
+
     return data;
   }
 
