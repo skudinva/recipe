@@ -8,6 +8,15 @@ export function fillDTO<T, V>(someDTO: ClassConstructor<T>, plainObject: V) {
   });
 }
 
+export function isObjectHasProperty(object: Object, key: string): boolean {
+  return (
+    object !== undefined &&
+    object !== null &&
+    !Array.isArray(object) &&
+    object.hasOwnProperty(key)
+  );
+}
+
 export function clearTagsFromObjectValue(object: any) {
   const clearTags = ['<strong>', '</strong>'];
   Object.keys(object).forEach((key) => {
@@ -71,4 +80,12 @@ export function convertFlatReportToNested(report: Object): void {
     }
   });
   report['data'] = nestedReport;
+}
+
+export function transformBfoResponse(data: any[]): void {
+  data.forEach((element) => {
+    Object.entries(element.correction).forEach(([_key, value]) => {
+      isObjectHasProperty(value, 'okud') && convertFlatReportToNested(value);
+    });
+  });
 }
