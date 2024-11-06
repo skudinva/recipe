@@ -61,13 +61,13 @@ export function nullifyObjectValue(object: Record<string, any>) {
 }
 
 function getPeriodKey(key: string): ReportPeriodCode {
-  const periodKey = Object.keys(ReportPeriodCode).find(
-    (period) => key === period,
+  const periodKey = Object.keys(ReportPeriodCode).find((period) =>
+    key.startsWith(period),
   );
-  if (!periodKey) {
-    throw new Error(`Invalid report period key: ${key}`);
+  if (periodKey) {
+    return ReportPeriodCode[periodKey as keyof typeof ReportPeriodCode];
   }
-  return ReportPeriodCode[periodKey as keyof typeof ReportPeriodCode];
+  return null;
 }
 
 export function convertFlatReportToNested(report: Record<string, any>): void {
