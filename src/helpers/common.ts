@@ -70,7 +70,7 @@ function getPeriodKey(key: string): ReportPeriodCode {
   return ReportPeriodCode[periodKey as keyof typeof ReportPeriodCode];
 }
 
-export function convertFlatReportToNested(report: Object): void {
+export function convertFlatReportToNested(report: Record<string, any>): void {
   const nestedReport: BaseTaxReportEntity = report['data'] || {};
   Object.entries(report).forEach(([key, value]) => {
     const periodKey = getPeriodKey(key);
