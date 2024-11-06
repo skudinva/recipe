@@ -37,11 +37,14 @@ export function isDateString(str: string): boolean {
   );
 }
 
-export function datefyObjectValue(object: Object) {
+export function datefyObjectValue(object: Record<string, any>) {
   Object.keys(object).forEach((key) => {
     const value = object[key];
-
-    if (typeof value === 'object' && value !== null) {
+    if (Array.isArray(value) && value.length > 0) {
+      value.forEach((item) => {
+        datefyObjectValue(item);
+      });
+    } else if (typeof value === 'object' && value !== null) {
       datefyObjectValue(value);
     } else if (typeof value === 'string' && isDateString(value)) {
       object[key] = new Date(value).toISOString();
@@ -49,7 +52,7 @@ export function datefyObjectValue(object: Object) {
   });
 }
 
-export function nullifyObjectValue(object: any) {
+export function nullifyObjectValue(object: Record<string, any>) {
   Object.keys(object).forEach((key) => {
     if (typeof object[key] === 'object' && object[key] === null) {
       delete object[key];
@@ -58,10 +61,13 @@ export function nullifyObjectValue(object: any) {
 }
 
 function getPeriodKey(key: string): ReportPeriodCode {
-  const periodKey = Object.keys(ReportPeriodCode).find((period) =>
-    key.startsWith(period),
+  const periodKey = Object.keys(ReportPeriodCode).find(
+    (period) => key === period,
   );
-  return ReportPeriodCode[periodKey];
+  if (!periodKey) {
+    throw new Error(`Invalid report period key: ${key}`);
+  }
+  return ReportPeriodCode[periodKey as keyof typeof ReportPeriodCode];
 }
 
 export function convertFlatReportToNested(report: Object): void {
